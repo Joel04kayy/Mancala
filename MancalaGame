@@ -1,0 +1,80 @@
+class MancalaGame:
+    def __init__(self):
+        self.board = [4] * 6 + [0] + [4] * 6 + [0]
+        self.current_player = 1
+
+    def display_board(self):
+        print("\nPlayer 2 (P2) side:")
+        print(self.board[7:13][::-1])
+        print("\nPlayer 1 (P1) side:")
+        print(self.board[:6])
+        print(f"\n P1 Store: {self.board[6]} \t P2 Store: {self.board[13]}")
+        if not self.is_game_over():
+            print("\nCurrent Player:", "P1" if self.current_player == 1 else "P2")
+
+    def is_game_over(self):
+        return all(count == 0 for count in self.board[:6]) or all(count == 0 for count in self.board[7:13])
+
+    def make_move(self, pit_index):
+        if (self.current_player == 1 and (pit_index < 0 or pit_index >= 6 or self.board[pit_index] == 0 or pit_index == 6)) or \
+           (self.current_player == 2 and (pit_index < 7 or pit_index >= 13 or self.board[pit_index] == 0 or pit_index == 13)):
+            print("Invalid move. Try again.")
+            return
+
+        stones = self.board[pit_index]
+        self.board[pit_index] = 0
+
+        while stones > 0:
+            pit_index = (pit_index + 1) % 14
+            if (self.current_player == 1 and pit_index == 13) or (self.current_player == 2 and pit_index == 6):
+                continue
+            self.board[pit_index] += 1
+            stones -= 1
+
+        # Check for capture and additional turns
+        if pit_index != 6 and pit_index != 13 and self.current_player == 1 and self.board[pit_index] == 1 and self.board[12 - pit_index] > 0:
+            self.board[6] += self.board[pit_index] + self.board[12 - pit_index]
+            self.board[pit_index] = 0
+            self.board[12 - pit_index] = 0
+        elif pit_index != 6 and pit_index != 13 and self.current_player == 2 and self.board[pit_index] == 1 and self.board[12 - pit_index] > 0:
+            self.board[13] += self.board[pit_index] + self.board[12 - pit_index]
+            self.board[pit_index] = 0
+            self.board[12 - pit_index] = 0
+
+        # Switch player if the last stone doesn't land in the Mancala
+        if pit_index != 6 and pit_index != 13:
+            self.current_player = 3 - self.current_player  # Switch player
+
+        # Check if the current player's pits are empty, and if so, collect remaining stones to their store
+        if all(count == 0 for count in self.board[:6]) and self.current_player == 1:
+            self.board[13] += sum(self.board[7:13])
+            self.board[7:13] = [0] * 6
+        elif all(count == 0 for count in self.board[7:13]) and self.current_player == 2:
+            self.board[6] += sum(self.board[:6])
+            self.board[:6] = [0] * 6
+
+    def play(self):
+        while not self.is_game_over():
+            self.display_board()
+            try:
+                pit_index = int(input("Enter the pit number to move stones from (0-5 for P1, 7-12 for P2): "))
+                self.make_move(pit_index)
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
+        self.display_board()
+        print("Game over!")
+        if self.board[6] > self.board[13]:
+            print("Player 1 (P1) wins!")
+            self.board[6] += sum(self.board[:6])  # Add remaining pebbles on the board to Player 1's store
+        elif self.board[6] < self.board[13]:
+            print("Player 2 (P2) wins!")
+            self.board[13] += sum(self.board[7:13])  # Add remaining pebbles on the board to Player 2's store
+        else:
+            print("It's a tie!")
+
+        print(f"Final scores: Player 1: {self.board[6]} & Player 2: {self.board[13]}")
+
+if __name__ == "__main__":
+    mancala_game = MancalaGame()
+    mancala_game.play()
