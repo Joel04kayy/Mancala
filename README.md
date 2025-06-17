@@ -38,11 +38,3 @@ java -jar build/libs/MancalaUI.jar
 
 
 
-
-
-
-
-
-
-
-
