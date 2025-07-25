@@ -35,3 +35,24 @@ gradle echo
 ```
 java -jar build/libs/MancalaUI.jar
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
