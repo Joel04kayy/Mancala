@@ -1,4 +1,3 @@
-
 # Project Title: Mancala
 
 ## How to play 
